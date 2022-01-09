@@ -53,7 +53,7 @@ module.exports.addProduct = async (req, res) => {
 
     
     } catch (error) {
-        res.status(400).send({data: "Hiii"})
+        res.status(400).send({error: error})
     }
 
 
@@ -117,8 +117,10 @@ module.exports.editProduct = async (req, res) => {
         delete req.body.userId
         delete req.body.role
         
-        const dimensions = JSON.parse(req.body.dimensions)
+        const dimensions = JSON.parse(req.body["dimensions"])
+       
         delete req.body.dimensions
+        
         let product = await Product.findById(req.params.id)
         if (!product)  return res.status(400).send({error: "No Product found"})
         else

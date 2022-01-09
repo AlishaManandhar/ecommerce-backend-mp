@@ -38,7 +38,7 @@ module.exports.addProduct = async (req, res) => {
 module.exports.getWishlist = async (req, res) => {
     try {
 
-        let wishlist = await Wishlist.find({ userId: req.body.userId }).populate("productId",["name", "dimensions"])
+        let wishlist = await Wishlist.find({ userId: req.body.userId }).populate("productId",["name", "dimensions", "regularPrice","discountPercentage","frontImage"]).sort({createdAt:'desc'})
 
         res.status(200).send({data: wishlist})
 

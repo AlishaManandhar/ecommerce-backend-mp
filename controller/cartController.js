@@ -3,6 +3,7 @@ const { Cart } = require("../models/Cart")
 module.exports.addProduct = async (req, res) => {
     try {
         const { productId, quantity, color, size, userId } = req.body
+        console.log(req.body)
         let cart = await Cart.findOne({ userId, productId, color, size})
         if (cart)
         {
@@ -41,7 +42,7 @@ module.exports.addProduct = async (req, res) => {
 module.exports.getCart = async (req, res) => {
     try {
 
-        let cart = await Cart.find({ userId: req.body.userId, status:"active" }).populate("productId",["name", "dimensions"]).sort({updatedAt:'desc'})
+        let cart = await Cart.find({ userId: req.body.userId, status:"active" }).populate("productId",["name", "dimensions", "regularPrice","discountPercentage","frontImage"]).sort({createdAt:'desc'})
 
         res.status(200).send({data: cart})
 
@@ -55,12 +56,13 @@ module.exports.getCart = async (req, res) => {
 module.exports.editCart = async (req, res) => {
     try {
 
-        const { productId, quantity, color, size, userId } = req.body
-        let cart = await Cart.findOne({ userId, productId, color,size})
-        
+        const { productId, quantity,  userId } = req.body
+        let cart = await Cart.findOne({ userId,_id: req.params.id})
+        console.log(req.body)
         cart.quantity = quantity
         await cart.save()
-        res.status(200).send({ message: "Cart Updated" })
+        
+        res.status(201).send({ msg: "Cart Quantity Updated" })
 
     } catch (error) {
         res.status(400).send(error)
@@ -78,7 +80,7 @@ module.exports.deleteProduct = async (req, res) => {
         {
             cart.status="deleted"
             await cart.save()
-            res.status(200).send({ message: "Product removed from cart" })
+            res.status(200).send({ msg: "Product removed from cart" })
         }
         else
         {

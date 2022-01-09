@@ -5,7 +5,7 @@ const {verifyToken} = require("../middlewares/auth")
 
 
 router.post("/",verifyToken,addProduct)
-router.put("/",verifyToken,editCart)
+router.put("/:id",verifyToken,editCart)
 router.put("/delete/:id", verifyToken,deleteProduct)
 router.get("/",verifyToken,getCart)
 

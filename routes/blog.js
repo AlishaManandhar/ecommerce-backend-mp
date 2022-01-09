@@ -4,8 +4,8 @@ const {verifyToken,verifyTokenAndAdmin} = require("../middlewares/auth")
 const router = new express.Router()
 
 
-router.get("/", verifyToken, getBlogs)
-router.get("/:id", verifyToken, getBlog)
+router.get("/", getBlogs)
+router.get("/:id", getBlog)
 router.post("/",verifyTokenAndAdmin, createBlog)
 router.put("/:id",verifyTokenAndAdmin,editBlog)
 router.delete("/:id",verifyTokenAndAdmin,deleteBlog)

@@ -1,7 +1,7 @@
 const express = require("express")
 const router =  new express.Router()
 const {addProduct, getProducts, getProduct, editProduct,editProductFrontImage, deleteProduct} = require("../controller/productController")
-const {verifyToken, verifyTokenAndAdmin} = require("../middlewares/auth")
+const { verifyTokenAndAdmin} = require("../middlewares/auth")
 
 
 router.post("/",verifyTokenAndAdmin,addProduct)
