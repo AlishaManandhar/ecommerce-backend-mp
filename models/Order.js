@@ -22,16 +22,24 @@ const orderSchema = new mongoose.Schema({
         type: String,
         required: "Lastname is required"
     },
+    contact:{
+        type:String,
+        required:true
+    },
+    email:{
+        type:String,
+        required:true
+    },
     province: {
             type: Number,
             required: true,
         //     enum: [1,2,3,4,5,6,7]
     },
-    district: {
+    city: {
             type: String,
             required: true
     },
-    region: {
+    address: {
             type: String,
             required: true
     },

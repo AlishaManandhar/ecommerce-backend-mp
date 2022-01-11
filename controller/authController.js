@@ -33,8 +33,8 @@ module.exports.register = async (req, res) => {
             user = new User(req.body)
             await user.save()
 
-            // await registerMail().catch()
-            // await registerMail(user.email, user.firstname, user.lastname)
+            
+            await registerMail(user.email, user.firstname, user.lastname)
             res.status(200).send({
               message: "User Account Created"
             })
@@ -59,12 +59,12 @@ module.exports.login = async (req,res) => {
     
     if (!user)
     {
-        res.status(401).send({password: "Email not found"})
+        res.status(400).send({password: "Email not found"})
     }
     else
     {
        const isMatch =  bcrypt.compareSync(password, user.password)
-       if (!isMatch) res.status(401).send({password: "Wrong Email or Password"})
+       if (!isMatch) res.status(400).send({password: "Wrong Email or Password"})
        else{
             const token = await user.generateAuthToken()
             res.status(200).send({data:user,token})

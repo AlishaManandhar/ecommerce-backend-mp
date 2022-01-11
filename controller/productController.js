@@ -62,7 +62,7 @@ module.exports.addProduct = async (req, res) => {
 module.exports.getProducts = async (req, res) => {
     try {
         let products;
-        if (req.query.category || req.query.sale)
+        if (req.query.category || req.query.sale || req.query.search)
         {
             
             if(req.query.category)
@@ -73,6 +73,10 @@ module.exports.getProducts = async (req, res) => {
             else if (req.query.sale)
             {
                 products = await Product.find({isSale:req.query.sale, status: "Available"})
+            }
+            else
+            {
+                products = await Product.find({"name": { $regex: req.query.search, $options: 'i' }} )
             }
         }
         else
@@ -109,6 +113,7 @@ module.exports.getProduct = async (req, res) => {
 
 
 }
+
 
 
 

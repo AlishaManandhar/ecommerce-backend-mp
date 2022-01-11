@@ -115,7 +115,7 @@ module.exports.deleteCategory = async (req, res) => {
         else
         {
             message = `Product already exists for ${category.subCategoryName}`
-            res.status(403).send({error: message})
+            res.status(400).send({error: message})
         }
     
     }

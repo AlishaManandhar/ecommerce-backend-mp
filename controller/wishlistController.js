@@ -52,13 +52,13 @@ module.exports.getWishlist = async (req, res) => {
 module.exports.editWishlist = async (req, res) => {
     try {
 
-        const { productId, quantity, color, size, userId } = req.body
-        let wishlist = await Wishlist.findOne({ userId, productId, color,size})
+        const { productId, quantity, userId } = req.body
+        let wishlist = await Wishlist.findOne({ userId, productId, _id: req.params.id})
         
         
         wishlist.quantity = quantity
         await wishlist.save()
-        res.status(200).send({ message: "Wishlist Updated" })
+        res.status(200).send({ msg: "Wishlist Updated" })
 
     } catch (error) {
         res.status(400).send(error)
@@ -72,7 +72,7 @@ module.exports.deleteProduct = async (req, res) => {
 
         await Wishlist.findByIdAndDelete(req.params.id)
 
-        res.status(200).send({ message: "Deleted Successfully" })
+        res.status(200).send({ msg: "Deleted Successfully" })
 
     } catch (error) {
         res.status(400).send(error)

@@ -70,7 +70,7 @@ module.exports.getBlogs = async (req, res) => {
       let blog = await Blog.findById(req.params.id);
   
       if (!blog) {
-        res.status(403).send({ err: "Post doesnt  Exist" });
+        res.status(400).send({ err: "Post doesnt  Exist" });
       } else {
         blog.title = req.body.title.toLowerCase();
         blog.content = req.body.content;
@@ -80,7 +80,7 @@ module.exports.getBlogs = async (req, res) => {
         res.status(200).send({ "message": "Blog Updated Successfully"});
       }
     } catch (err) {
-      res.status(403).send(err);
+      res.status(400).send(err);
     }
   };
   

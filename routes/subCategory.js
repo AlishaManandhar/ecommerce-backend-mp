@@ -6,10 +6,10 @@ const { verifyTokenAndAdmin} = require("../middlewares/auth")
 
 router.post("/",verifyTokenAndAdmin,createSubCategory)
 router.put("/:id",verifyTokenAndAdmin,editCategory)
-router.get("/",verifyToken,getSubCategories)
-router.get("/:id",verifyToken,getSubCategory)
+router.get("/",getSubCategories)
+router.get("/:id",getSubCategory)
 
-router.get("/parent/:id",verifyToken,getSubCategoryByParent)
+router.get("/parent/:id",getSubCategoryByParent)
 router.delete("/:id",verifyTokenAndAdmin,deleteCategory)
 
 module.exports = router

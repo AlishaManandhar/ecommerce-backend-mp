@@ -6,8 +6,8 @@ const { verifyTokenAndAdmin} = require("../middlewares/auth")
 
 router.post("/",verifyTokenAndAdmin,createCategory)
 router.put("/:id",verifyTokenAndAdmin,editCategory)
-router.get("/",verifyToken,getCategories)
-router.get("/:id",verifyToken,getCategory)
+router.get("/",getCategories)
+router.get("/:id",getCategory)
 router.delete("/:id",verifyTokenAndAdmin,deleteCategory)
 
 module.exports = router

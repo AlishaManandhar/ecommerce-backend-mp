@@ -2,8 +2,8 @@ const { Order } = require("../models/Order")
 const { OrderProduct } = require("../models/OrderedProduct")
 const {Cart} = require("../models/Cart")
 const {Product } = require("../models/Product")
-const e = require("express")
-const { restart } = require("nodemon")
+const { deliveryMail } = require("../middlewares/mailer")
+
 
 
 const getIndex = (array,color,size) => 
@@ -30,11 +30,15 @@ const getIndex = (array,color,size) =>
 module.exports.createOrder = async (req, res) => {
     try {
 
-        const { userId,province,district, firstname, lastname,region,area } = req.body
+        const { userId,province,address, firstname, lastname,city,contact,email,area } = req.body
         
         const products = await Cart.find({userId,status:"active"})
         
         let product = {}, cost = 0, price = [], data = []
+        if (products.length === 0)
+        {
+            res.status(400).send({error: "Please add products to cart"})
+        }
         let temp = 0
         
         for(let i = 0; i < products.length; i++)
@@ -59,14 +63,16 @@ module.exports.createOrder = async (req, res) => {
             }
         } 
         
+        
 
         if (data.length === products.length)
         {
-            const shippingPrice = cost >= 1500 ? 0 : 100
-
+            const shippingPrice = cost >= 1500 ? 0 : 150
+            
             let order = new Order({
-                userId,province,district, region,area, shippingPrice, total:cost, orderStatus: "Pending",firstname, lastname
+                userId,province,city, address,area,contact, email, shippingPrice, total:cost, orderStatus: "Pending",firstname, lastname
             })
+            
 
             order = await order.save()
        
@@ -90,13 +96,13 @@ module.exports.createOrder = async (req, res) => {
                 products[i].status = "checkout",
                 await products[i].save()
             }
-            res.status(200).send("Order Saved");
+            res.status(200).send({message: "Your order has been placed"});
 
             
         }
         else
         {
-            res.status(401).send("jkhjkhk")
+            res.status(400).send({error: "Unexpected Error Occured"})
         }
     }
     catch(err)
@@ -109,10 +115,21 @@ module.exports.createOrder = async (req, res) => {
 
 }
 
+module.exports.getOrders = async (req, res) => {
+    try {
+        let order = await Order.find({ status: "Pending"}).sort({createdAt:'asc'})
+        res.status(200).send({data: order})
+
+    } catch (error) {
+        res.status(400).send(error)
+    }
+
+}
+
 
 module.exports.getOrder = async (req, res) => {
     try {
-
+        
         let order = await Order.find({ userId: req.body.userId }).sort({createdAt:'asc'})
         res.status(200).send({data: order})
 
@@ -125,7 +142,19 @@ module.exports.getOrder = async (req, res) => {
 module.exports.getOrderProducts = async (req, res) => {
     try {
 
-        let orderProducts = await OrderProduct.find({orderId:req.params.id} )
+        let orderProducts = await OrderProduct.find({orderId:req.params.id} ).populate("productId",["frontImage"]).populate("orderId")
+        res.status(200).send({data: orderProducts})
+
+    } catch (error) {
+        res.status(400).send(error)
+    }
+
+}
+
+module.exports.getMyOrderProducts = async (req, res) => {
+    try {
+
+        let orderProducts = await OrderProduct.find({orderId:req.params.id, userId: req.body.userId} ).populate("productId",["frontImage"]).populate("orderId")
         res.status(200).send({data: orderProducts})
 
     } catch (error) {
@@ -136,12 +165,13 @@ module.exports.getOrderProducts = async (req, res) => {
 
 module.exports.processOrder = async (req, res) => {
     try {
-
+        
         let order = await Order.findById(req.params.id)
         order.orderStatus = "Processing"
+        
         await order.save()
 
-        res.status(200).send({message:"Order modified", order})
+        res.status(200).send({message:"Order modified"})
 
     } catch (error) {
         res.status(400).send(error)
@@ -153,10 +183,11 @@ module.exports.deliverOrder = async (req, res) => {
     try {
 
         let order = await Order.findById(req.params.id)
+        let orderProducts = await OrderProduct.find({orderId:req.params.id} ).populate("orderId")
         order.orderStatus = "Shipped"
         await order.save()
-
-        res.status(200).send({message:"Order Delivered", order})
+        await deliveryMail(order.email, order.firstname, orderProducts )
+        res.status(200).send({message:"Order Delivered"})
 
     } catch (error) {
         res.status(400).send(error)
@@ -253,7 +284,7 @@ module.exports.cancelOrder = async (req, res) => {
         }
         else
         {
-            res.status(401).send("Error")
+            res.status(400).send("Error")
         }
     }
     catch(err)

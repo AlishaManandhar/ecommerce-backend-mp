@@ -27,4 +27,23 @@ module.exports.registerMail = async (email = "alisha.manandhar@deerwalk.edu.np",
 }
 
 
+module.exports.deliveryMail = async (email = "alisha.manandhar@deerwalk.edu.np", firstname = "Alisha", orderProducts) => {
+  let str = ""
+      for(let i = 0; i < orderProducts.length; i++)
+    {
+      str += `<li>&nbsp; <b> ${orderProducts[i].productName} ${orderProducts[i].quantity} * ${orderProducts[i].price} </b></li>`
+    }
+  
+   
+  let info = await transporter.sendMail({
+      from: process.env.USER_EMAIL, 
+      to: email, // list of receivers
+      subject: "Product Delivery", // Subject line
+       // plain text body
+      html: `<p>Hi ${firstname},</p>
+      <p>&nbsp;Your products for order number <b>${orderProducts[0].orderId._id}</b>have been delivered few moments ago. The products are:&nbsp;</p><ol> ${str}  </ol><p>Regards,</p> <p> <strong> Online Baby Store </strong></p>` // html body
+    });
+  console.log("Hi")
+}
+
 
